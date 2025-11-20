@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { TextField, Button, Box, Typography, Alert } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Alert,
+  Paper,
+} from "@mui/material";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +18,7 @@ const Register = () => {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,6 +31,7 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
 
     // Validation
     if (
@@ -66,11 +75,42 @@ const Register = () => {
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
 
-    // Auto-login after registration
-    localStorage.setItem("authToken", "dummy-token");
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
-    navigate("/dashboard");
+    // Show success message and redirect after delay
+    setSuccess(true);
+
+    setTimeout(() => {
+      // Auto-login after registration
+      localStorage.setItem("authToken", "dummy-token");
+      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      navigate("/dashboard");
+    }, 2000);
   };
+
+  if (success) {
+    return (
+      <Box className="auth-container">
+        <Paper
+          elevation={3}
+          sx={{ p: 4, maxWidth: 400, width: "100%", textAlign: "center" }}>
+          <Typography variant="h4" component="h1" gutterBottom color="primary">
+            🎉 Registration Successful!
+          </Typography>
+          <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            Welcome, {formData.firstName} {formData.lastName}!
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
+            Your account has been created successfully. You will be redirected
+            to your dashboard shortly.
+          </Typography>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Redirecting...
+            </Typography>
+          </Box>
+        </Paper>
+      </Box>
+    );
+  }
 
   return (
     <Box className="auth-container">
